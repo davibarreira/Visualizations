@@ -15,7 +15,7 @@
 
 
 ## Introduction
-
+T
 This is an Idyll post. It is generated via
 the file `index.idyll`. To compile this post using
 idyll, run the command `idyll` inside of this directory.
@@ -23,8 +23,21 @@ idyll, run the command `idyll` inside of this directory.
 
 Idyll posts are designed to support interaction and
 data-driven graphics.
-
+[data name:"abcBeta" source:"ABC_Beta.csv" /]
 [var name:"state" value:0 /]
+
+[IdyllVegaLite data:abcBeta spec:`{
+  width: 300,
+  height: 200,
+  renderer: 'svg',
+  mark: "circle",
+  encoding: {
+    x: {field: "x1", type: "quantitative"},
+    y: {field: "x2", type: "quantitative"}
+  }
+}` /]
+
+
 [CustomD3Component className:"d3-component" state:state /]
 [button onClick:`state++`]
   Click Me.
