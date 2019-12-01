@@ -1,8 +1,8 @@
-[meta title:"ABC" description:"Short description of your project" /]
+[meta title:"Mathematical Visualizations" description:"Short description of your project" /]
 
 [Header
   fullWidth:true
-  title:"ABC & Amazing Graphs"
+  title:"Approximate Bayesian Computation (ABC)"
   subtitle:"Mathematical Visualizations"
   author:"Davi Sales Barreira"
   authorLink:"https://github.com/davibarreira/Visualizations"
@@ -107,83 +107,3 @@ that motivated me (both using idyll).
 
 * [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/)
 * [Multi-Armed Banding Problem](https://cse442-17f.github.io/LinUCB/)
-
-### 2. Amazing Graphs
-This is based on [this video series](http://bit.ly/Amazing_Graphs) from
-Numberphile. It's an exploration of different (and amazing) sequences
-of integers. The sequences have "simple" recursion rules, but result
-in some really astonishing visuals. The idea is to reproduce some
-of the graphs (and perhaps others) shown in the video, and visualize them
-with "artistic purposes". Also, use some iteractivity to let users explore
-different aesthetic components, such as chaning colors and shapes.
-
-#### 1.1 Vision Ideas
-The idea is to produce "art from math", by using the sequences
-of integers and building upon them.
-
-##### Balanced Ternary
-You write your number in base 3 and replace all the 2's to -1.
-
-```julia
-function Balanced_Ternary(n)
-    if n==0
-        return 0
-    end
-    if n%3 == 0
-        return 3*Balanced_Ternary(n/3)
-    elseif n%3 == 1
-        return 3*Balanced_Ternary((n-1)/3)+1
-    else
-        return 3*Balanced_Ternary((n-2)/3) -1
-    end
-end
-```
-
-[data name:"bt" source:"bt.csv" /]
-[var name:"state" value:0 /]
-[IdyllVegaLite data:bt spec:`{
-  "hconcat":[{
-
-  "selection": {
-    "grid": {
-      "type": "interval", "bind": "scales"
-    }},
-  "mark": "area",
-  "width": 600,
-  "height": 400,
-  "encoding": {
-    "x": {"field": "ID", "type": "quantitative", "axis": {"grid":false}},
-    "y": {"field": "S", "type": "quantitative", "axis":{"grid":false}},
-    "color": {
-      "value": "black"
-    }
-  }
-
-},
-{
-  "selection": {
-    "grid": {
-      "type": "interval", "bind": "scales"
-    }},
-  "mark": {"type": "point", "shape":"triangle-down", "filled":true},
-  "width": 600,
-  "height": 400,
-  "encoding": {
-    "x": {"field": "ID", "type": "quantitative", "axis": {"grid":false}},
-    "y": {"field": "S", "type": "quantitative", "axis":{"grid":false}},
-    "color": {
-      "field": "S", "type":"quantitative",
-      "scale": {"type": "quantize","zero": true,"scheme": "inferno"}
-    }
-  }
-}
-]
-}` /]
-
-// ![quill](static/images/BalancedTernarySun.png)
-// [image style:`{width: '100%'}` src:"static/images/BalancedTernarySun.png" /]
-[FullWidth]
-[div className:"figure"]
-[img src:"static/images/BalancedTernarySun.png" width:"6000px"/]
-[/div]
-[/FullWidth]
