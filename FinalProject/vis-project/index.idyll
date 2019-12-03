@@ -107,3 +107,19 @@ that motivated me (both using idyll).
 
 * [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/)
 * [Multi-Armed Banding Problem](https://cse442-17f.github.io/LinUCB/)
+
+#### 1.4 Animation
+[var name:"cx" value:400 /]
+[var name:"cy" value:200 /]
+[var name:"r" value:10 /]
+
+[svg fullWidth:true width:800 height:400 style:`{width: '100%', background: '#222'}` ]
+  [circle  r:r cx:cx cy:cy fill:"#fff" /]
+[/svg]
+[Button onClick:`animate('cx', Math.random() * 800, 250); animate('cy', Math.random() * 400, 250)` ]
+  Move circle
+[/Button]
+
+[Button onClick:`animate('r', 3 + Math.random() * 20)` ]
+  Resize circle
+[/Button]

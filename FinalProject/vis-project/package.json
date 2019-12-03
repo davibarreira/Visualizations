@@ -6,7 +6,8 @@
     "theme": "default",
     "layout": "blog",
     "css": "styles.css",
-    "authorView": false
+    "authorView": false,
+    "context": "./context.js"
   },
   "dependencies": {
     "d3": "^4.0.0",
