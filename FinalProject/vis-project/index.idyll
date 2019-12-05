@@ -46,13 +46,16 @@ with discrete data, and another with continuos data.
 In the conclusion, the some parameters evaluating the performance of
 the algorithm will be shown.
 
-[aside]
-##### Analytical Distribution
-![quill](static/images/distributions.png)
-[/aside]
 Below there is an example of visualization I'm planning on doing.
 
-[var name:"numberBins" value:20 /]
+
+[aside]
+#####  Analytical Distribution
+[br /]
+![quill](static/images/distributions.png)
+[/aside]
+
+[var name:"numberBins" value:15 /]
 [var name:"color" value:"gray" /]
 
 [data name:"abcBeta" source:"ABC_Beta.csv" /]
@@ -69,12 +72,12 @@ Below there is an example of visualization I'm planning on doing.
         "brush": {"type": "interval","encodings": ["x"],"init":{"x": [5.6, 6.4]}}
       },
       "view":{"stroke" : null},
-      "width": 500,
-      "height": 300,
+      "width": 300,
+      "height": 200,
       "mark": {"type": "bar","stroke": "black",
       "strokeWidth": 0.2},
       "encoding": {
-          "x": {"field": "x1", "type": "quantitative","axis": {"grid":false, "title":"K"},"scale":{"domain":[-0.1,8.1]}},
+          "x": {"field": "x1", "type": "quantitative","axis": {"grid":false, "title":"K (# sucesses)"},"scale":{"domain":[-0.1,8.1]}},
           "y": {"aggregate": "count","type": "quantitative", "axis": {"grid":false, "title":"Count Samples"}},
           "size":{"value":15},
           "color": {
@@ -90,14 +93,14 @@ Below there is an example of visualization I'm planning on doing.
       "transform": [
         {"filter": {"selection": "brush"}}
       ],
-      "width": 500,
-      "height": 300,
+      "width": 300,
+      "height": 200,
       "mark": "bar",
       "encoding": {
       "x": {
           "bin":{"maxbins":20},
           "field": "x3",
-          "type": "quantitative"
+          "type": "quantitative", "axis":{"title":"Coin Bias"}
       },
       "y": {
           "aggregate": "count",
@@ -109,4 +112,4 @@ Below there is an example of visualization I'm planning on doing.
   }]
 }` /]
 
-[action style:`{color:'red'}` onClick:`color='red'`]red[/action] [action style:`{color:'gray'}` onClick:`color='gray'`]green[/action] [action style:`{color:'#4682b4'}` onClick:`color='#4682b4'`]blue[/action]
+// [action style:`{color:'red'}` onClick:`color='red'`]red[/action] [action style:`{color:'gray'}` onClick:`color='gray'`]green[/action] [action style:`{color:'#4682b4'}` onClick:`color='#4682b4'`]blue[/action]
