@@ -48,6 +48,98 @@ the algorithm will be shown.
 
 Below there is an example of visualization I'm planning on doing.
 
+[var name:"idSampler" value: 1 /]
+[data name:"abcBeta" source:"ABC_Beta.csv" /]
+[var name:"state" value:0 /]
+[derived name:"nSucesses" value:`abcBeta.filter(c => c.x4 == idSampler)[0].x1` /]
+
+We start with the sample  [display var:idSampler format:"d" /].
+Running the simulation, we get [display var:nSucesses format:"d" /].
+
+[button onClick:`idSampler++` style:`{padding: 10, background: '#ddd',
+margin: '0 auto', display: 'block', cursor: 'pointer'}`]
+Sample new coin
+[/button]
+
+[IdyllVegaLite data:abcBeta spec:`{
+  "hconcat" : [
+    {
+      "layer":[{
+      "width": 500,
+      "height": 300,
+      "mark":{"type":"area","line":true},
+      "encoding": {
+      "x": {
+          "field": "x3",
+          "type": "quantitative",
+          "axis":{"grid":false,"title":"Coin Bias"}
+      },
+      "y": {
+          "field": "x5",
+          "type": "quantitative",
+          "axis":{"grid":false},
+          "scale":{"domain":[0,1.2]}
+        }
+      }},{
+      "width": 500,
+      "height": 300,
+      "transform": [
+        {"filter": {"field": "x4", "equal":idSampler}}
+      ],
+      "mark": {"type":"bar", "color":"orange"},
+      "encoding": {
+      "x": {
+          "field": "x3",
+          "type": "quantitative",
+          "scale":{"domain":[0,1]},
+              "axis":{"grid":false}
+      },
+      "y": {
+          "field": "x5",
+          "type": "quantitative",
+          "title": "Prior Probability",
+          "scale":{"domain":[0,1.2]}
+        },
+      "color":{"field":"x4","type":"nominal",
+                "legend": {"orient": "top", "title": "Sampled Coin"},
+                "scale": {
+                "range": ["orange"]
+                }}
+              }
+      }
+      ]
+  },
+  {
+      "width": 500,
+      "height": 300,
+      "transform": [
+        {
+          "filter":{"and":[{"field": "x1", "equal":6},
+              {"field": "x4", "lte":idSampler}]
+          }
+      }],
+      "mark": "bar",
+      "encoding": {
+      "x": {
+          "scale":{"domain":[0,1]},
+          "bin": {
+              "binned": false,
+              "step": 0.1},
+          "field": "x3",
+          "type": "quantitative",
+          "axis":{"grid":false,"title":"Coin Bias"}
+      },
+      "y": {
+          "aggregate": "count",
+          "type": "quantitative",
+          "title": "Count Samples Posterior",
+          "axis":{"grid":false},
+          "scale":{"domain":[0,10]}
+        }
+      }}
+  ]
+}` /]
+
 
 [aside]
 #####  Analytical Distribution
@@ -58,8 +150,8 @@ Below there is an example of visualization I'm planning on doing.
 [var name:"numberBins" value:15 /]
 [var name:"color" value:"gray" /]
 
-[data name:"abcBeta" source:"ABC_Beta.csv" /]
-[var name:"state" value:0 /]
+// [data name:"abcBeta" source:"ABC_Beta.csv" /]
+// [var name:"state" value:0 /]
 [IdyllVegaLite data:abcBeta spec:`{
   "hconcat" : [
     {
