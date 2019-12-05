@@ -13,20 +13,10 @@
 
 
 ## Introduction
-This project aims to explore visualizations in mathematics. The idea
-is to create a "gallery" with different "collections", each exploring
-a different mathematical topic. At the moment, I'm still deciding which
-topic this project will focus on. There are two candidates and I might
-end up doing both, depending on how much work turns out to be necessary.
+This project aims to create an "explorable explanation" for the
+Approximate Bayesian Computation (ABC) algorithm.
 
-## Tools
-First, I plan to use this language (idyll) to write the iteractive web-page
-and publish it. This is perfect from creating the so called "explorable
-exaplanations".
-I also plan to use Vega-Lite to generate most of my graphs with iterations.
-
-## Topics
-### 1. Approximate Bayesian Computation (ABC)
+## 1. Approximate Bayesian Computation (ABC)
 This is an algorithm created to estimate the posterior probability density.
 Originally, it was proposed as a way of explaining how posterior
 probabilities could be understood in the context of frequency sampling.
@@ -35,7 +25,7 @@ stated that a posterior can be obtained by choosing parameters from a prior,
 simulating the sampling process of the real observations and accepting
 the parameters only when the simulated sample matched the real one.
 
-#### 1.1 ABC Sampler
+### 1.1 ABC Original Algorithm
 [aside]
 [Equation]
 θ \sim U(0,1), \quad
@@ -68,7 +58,10 @@ we sample a coin with bias θ from the prior distribution π(θ). We then
 throw the coin 8 times and check how many heads (sucesses) we got. If the
 number of heads is equal to 6 (the observed value), then we accept the
 θ. After doing this several times, the distribution of the θ's accepted
-is equal to our posterior distribution.
+is equal to our posterior distribution. The algorithm for the method
+is shown below.
+
+[img src:"./static/images/ABC_algo1.png" height:200 /]
 
 [var name:"idSampler" value: 1 /]
 [data name:"abcBeta" source:"ABC_Beta.csv" /]
@@ -79,7 +72,7 @@ is equal to our posterior distribution.
 [var name:"rejected" value:"Coin Rejected" /]
 [var name:"accepted" value:"Coin Accepted" /]
 
-Let's run a simulation.
+### Let's run a simulation!
 
 We start with the sample  **[display var:idSampler format:"d" /]**.
 Running the simulation:
@@ -174,12 +167,12 @@ Sample new coin
     {
     "width": 500,
     "height": 300,
-          "mark": {"type": "line", "color": "green"},
+          "mark": {"type": "line", "color": "black"},
           "encoding": {
-            "x": {"type": "quantitative", "field": "x6"},
+            "x": {"type": "quantitative", "field": "x6","title":"Theta"},
             "y": {
               "type": "quantitative",
-              "field": "x7", "axis": {"title":"Real posterior distribution", "titleColor":"green"}
+              "field": "x7", "axis": {"title":"Real posterior distribution", "titleColor":"black"}
             },"size":{"value":3}
           }
         }
@@ -250,7 +243,7 @@ ABC sampler for different he observed number of heads.
       "mark": "bar",
       "encoding": {
       "x": {
-          "bin":{"maxbins":15},
+          "bin":{"maxbins":20},
           "field": "x3",
           "type": "quantitative", "axis":{"title":"Coin Bias"}
       },
@@ -262,4 +255,143 @@ ABC sampler for different he observed number of heads.
       }}
       ]
   }]
+}` /]
+
+### 1.2 ABC for Continuos Variables
+Pritchard et al. (1999) extended the original algorithm to the case of
+continuos sample. The problem with continuos variables is that
+a precise match between the simulated and the observed value becomes impossible.
+The intuitive extension of the model is use a precision distance (ϵ), so
+we accept θ when the simulated and the observed value are closer than a value
+ϵ. Another extension is to use a sufficient static instead of each individual
+observed value.
+The algorithm for ABC dealing with continuos variables
+is given below.
+[img src:"./static/images/ABC_algo2.png" height:300 /]
+
+[br /]
+
+[aside]
+[Equation]
+p(θ \mid X) \propto
+\pi(θ) p(X \mid θ), \quad \quad
+θ \mid X \sim N(μ_1, τ^2_1)
+[/Equation]
+[br /]
+[br /]
+[Equation]
+μ_1 = \frac{τ^{-2}μ + σ^{-2}x}{τ^{-2} + σ^{-2}}, \quad \quad
+τ_1^{-2} = τ^{-2} + σ^{-2}
+[/Equation]
+[br /]
+[br /]
+![quill](static/images/normaldistribution.png)
+[/aside]
+Again, let's do an example to make the method clearer.
+Consider a model where [Equation]
+θ \sim N(μ,τ^2)
+[/Equation] and [Equation]
+X \mid θ \sim N(θ,σ^2)
+[/Equation], with [Equation]
+σ^2
+[/Equation]
+ known. Therefore, our posterior distribution is also gaussian.
+
+In our toy model, we observed 5 values with the mean equal to 1.3.
+The mean is a sufficient static for this model, hence, our algorithm
+works by sampling a θ from the prior,
+then we use this θ to sample 5 values from [Equation]N(θ, σ^2)[/Equation]
+and take their average.
+If the distance between the synthetic average and the observed average
+is less or equal than ϵ, we accept the θ.
+
+[var name:"eABC" value:3 /]
+In the graph below we plot the synthetic average for each simulation.
+The gray area represents the acceptance region. You can vary
+ϵ and see how decreasing it leads to a better approximation of the posterior.
+You can
+move the range slider to change the starting value of the **threshold** [dynamic min:0.1 max:10 step:0.1 value:eABC /].
+
+ϵ : 0.1 [Range value:eABC min:0.1 max:10 step:0.1/] 10
+
+[data name:"abcNormal" source:"ABC_Normal.csv" /]
+[IdyllVegaLite data:abcNormal spec:`{
+    "hconcat" : [
+  {
+
+    "view":{"stroke" : null},
+    "layer": [{
+
+
+    "selection": {
+      "brush": {"type": "interval","encodings": ["y"],"init":{"y": [1.29-eABC,eABC+1.29]}}
+    },
+    "view":{"stroke" : null},
+    "width": 500,
+    "height": 300,
+    "mark": {"type": "circle"},
+    "encoding": {
+        "x": {"field": "Id", "type": "quantitative","axis": {"grid":false, "title":"# Iteration"}},
+        "y": {"field": "Zm", "type":"quantitative","axis": {"grid":false, "title":"Sample Averege"}},
+        "size":{"value":10},
+        "color": {
+              "condition": {"selection": "brush", "type": "quantitative","title":"Theta",
+              "legend": {"orient": "top", "title": "Theta"}
+                            },
+              "value": "lightGrey"
+            }
+        }
+},
+{
+    "view":{"stroke" : null},
+    "width": 500,
+    "height": 300,
+    "mark": {"type": "line"},
+    "encoding": {
+        "x": {"field": "Id", "type": "quantitative","axis": {"grid":false}},
+        "y": {"field": "Mu", "type":"quantitative"},
+        "size":{"value":3},
+        "color": {
+              "value": "green"
+            }
+        }
+}
+]},
+  {
+    "layer":[
+    {
+    "transform": [
+      {"filter": {"selection": "brush"}}
+    ],
+    "width": 500,
+    "height": 300,
+      "mark": {"type": "bar", "color": "steelblue","opacity":1.0},
+      "encoding": {
+        "x": {
+            "bin":{"maxbins":20},
+            "field": "Theta",
+            "type": "quantitative"
+        },
+        "y": {
+          "type": "quantitative",
+          "aggregate": "count",
+          "field": "Theta","axis":{"title":"# ABC Accepted Samples","titleColor":"steelblue"}
+        }
+      }
+        },
+        {
+    "width": 500,
+    "height": 300,
+          "mark": {"type": "line", "color": "black"},
+          "encoding": {
+            "x": {"type": "quantitative", "field": "Grid","title":"Theta"},
+            "y": {
+              "type": "quantitative",
+              "field": "Real", "axis": {"title":"Real posterior distribution", "titleColor":"black"}
+            },"size":{"value":3}
+          }
+        }
+      ],
+      "resolve": {"scale": {"y": "independent", "x": "shared"}}
+}]
 }` /]
