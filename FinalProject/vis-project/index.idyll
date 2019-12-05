@@ -35,31 +35,65 @@ stated that a posterior can be obtained by choosing parameters from a prior,
 simulating the sampling process of the real observations and accepting
 the parameters only when the simulated sample matched the real one.
 
-#### 1.1 Vision Ideas
-The idea is to use iteractive visualizations coupled with equations
-to try and explain how
-the algorithm works using some toy models, in a way that a user
-can change parameters and see the changes in real time.
-The ABC algorithm has variations depending on the probability model
-being simulated, so I'll create a visualization considering a case
-with discrete data, and another with continuos data.
-In the conclusion, the some parameters evaluating the performance of
-the algorithm will be shown.
+#### 1.1 ABC Sampler
+[aside]
+[Equation]
+θ \sim U(0,1), \quad
+K \mid θ \sim Binomial(n=8, p=θ)
+[/Equation]
+[br /]
+[br /]
+[Equation]
+p(θ \mid K=6) \propto
+\pi(θ)p(k \mid θ)
+[/Equation]
+[br /]
+[br /]
+![quill](static/images/distributions.png)
+[/aside]
 
-Below there is an example of visualization I'm planning on doing.
+The idea of the ABC sampler is that we can get the posterior probability
+density function by samping from the prior distribution and then simulating
+the statistical experimenting, accepting the sampled parameter when the
+simulation result matches with the observed real world experiment.
+
+Perhaps a better way to understand the method is with an example. Assume
+that we threw a coin 8 times and observed 6 heads. Supposing that the bias
+of our coins (θ)
+come from a uniform prior distribution, we want to get the posterior
+distribution.
+
+This posterior distribution can be obtained in the following way. First,
+we sample a coin with bias θ from the prior distribution π(θ). We then
+throw the coin 8 times and check how many heads (sucesses) we got. If the
+number of heads is equal to 6 (the observed value), then we accept the
+θ. After doing this several times, the distribution of the θ's accepted
+is equal to our posterior distribution.
 
 [var name:"idSampler" value: 1 /]
 [data name:"abcBeta" source:"ABC_Beta.csv" /]
 [var name:"state" value:0 /]
 [derived name:"nSucesses" value:`abcBeta.filter(c => c.x4 == idSampler)[0].x1` /]
+[derived name:"nBias" value:`abcBeta.filter(c => c.x4 == idSampler)[0].x3` /]
 
-We start with the sample  [display var:idSampler format:"d" /].
-Running the simulation, we get [display var:nSucesses format:"d" /].
+[var name:"rejected" value:"Coin Rejected" /]
+[var name:"accepted" value:"Coin Accepted" /]
+
+Let's run a simulation.
+
+We start with the sample  **[display var:idSampler format:"d" /]**.
+Running the simulation:
+* Coin has a θ = **[display var:nBias format:"f" /]**;
+* Simulated number of heads = **[display var:nSucesses format:"d" /]**  ;
+
+ * [Conditional if:`nSucesses != 6`]**[display var:rejected format:"d" /]**[/Conditional][Conditional if:`nSucesses == 6`]**[display var:accepted format:"d" /]**[/Conditional]
+
 
 [button onClick:`idSampler++` style:`{padding: 10, background: '#ddd',
 margin: '0 auto', display: 'block', cursor: 'pointer'}`]
 Sample new coin
 [/button]
+
 
 [IdyllVegaLite data:abcBeta spec:`{
   "hconcat" : [
@@ -124,7 +158,7 @@ Sample new coin
           "scale":{"domain":[0,1]},
           "bin": {
               "binned": false,
-              "step": 0.1},
+              "step": 0.05},
           "field": "x3",
           "type": "quantitative",
           "axis":{"grid":false,"title":"Coin Bias"}
@@ -134,18 +168,30 @@ Sample new coin
           "type": "quantitative",
           "title": "Count Samples Posterior",
           "axis":{"grid":false},
-          "scale":{"domain":[0,10]}
+          "scale":{"domain":[0,22]}
         }
       }}
   ]
 }` /]
 
+[Float position:"center"]
+Number of Coins Sampled [Range value:idSampler min:1 max:1000 step:1/]
+[Display value:idSampler /]
+[/Float]
 
-[aside]
-#####  Analytical Distribution
-[br /]
-![quill](static/images/distributions.png)
-[/aside]
+To simulate more samples at once, use the handle above.
+
+In the case above we obtain the posterior distribution only for the
+case when K=6. This is extended in the
+graph below. In the left we plot all the coins sampled with the respective number of
+heads obtained when the throws are simulated. At the right we plot the histogram
+of the bias (θ) of this coins by filtering by the number of heads obtained.
+
+This graph is interactive, hence, you can alter the gray region which filters
+the coin by number of successes. Changing the position of the filter,
+one can observe the different posterior distribution estimates given by the
+ABC sampler for different he observed number of heads.
+
 
 [var name:"numberBins" value:15 /]
 [var name:"color" value:"gray" /]
@@ -164,8 +210,8 @@ Sample new coin
         "brush": {"type": "interval","encodings": ["x"],"init":{"x": [5.6, 6.4]}}
       },
       "view":{"stroke" : null},
-      "width": 300,
-      "height": 200,
+      "width": 500,
+      "height": 300,
       "mark": {"type": "bar","stroke": "black",
       "strokeWidth": 0.2},
       "encoding": {
@@ -185,8 +231,8 @@ Sample new coin
       "transform": [
         {"filter": {"selection": "brush"}}
       ],
-      "width": 300,
-      "height": 200,
+      "width": 500,
+      "height": 300,
       "mark": "bar",
       "encoding": {
       "x": {
@@ -203,5 +249,3 @@ Sample new coin
       ]
   }]
 }` /]
-
-// [action style:`{color:'red'}` onClick:`color='red'`]red[/action] [action style:`{color:'gray'}` onClick:`color='gray'`]green[/action] [action style:`{color:'#4682b4'}` onClick:`color='#4682b4'`]blue[/action]
