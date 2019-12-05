@@ -1,0 +1,233 @@
+[meta title:"Mathematical Visualizations" description:"Short description of your project" /]
+
+[Header
+  fullWidth:true
+  title:"Approximate Bayesian Computation (ABC)"
+  subtitle:"Mathematical Visualizations"
+  author:"Davi Sales Barreira"
+  authorLink:"https://github.com/davibarreira/Visualizations"
+  date:`(new Date()).toDateString()`
+  background:"#222222"
+  color:"#ffffff"
+   /]
+
+
+## Introduction
+This project aims to explore visualizations in mathematics. The idea
+is to create a "gallery" with different "collections", each exploring
+a different mathematical topic. At the moment, I'm still deciding which
+topic this project will focus on. There are two candidates and I might
+end up doing both, depending on how much work turns out to be necessary.
+
+## Tools
+First, I plan to use this language (idyll) to write the iteractive web-page
+and publish it. This is perfect from creating the so called "explorable
+exaplanations".
+I also plan to use Vega-Lite to generate most of my graphs with iterations.
+
+## Topics
+### 1. Approximate Bayesian Computation (ABC)
+This is an algorithm created to estimate the posterior probability density.
+Originally, it was proposed as a way of explaining how posterior
+probabilities could be understood in the context of frequency sampling.
+The idea originated from a paper of Donald Rubin in the 1980's, which
+stated that a posterior can be obtained by choosing parameters from a prior,
+simulating the sampling process of the real observations and accepting
+the parameters only when the simulated sample matched the real one.
+
+#### 1.1 Vision Ideas
+The idea is to use iteractive visualizations coupled with equations
+to try and explain how
+the algorithm works using some toy models, in a way that a user
+can change parameters and see the changes in real time.
+The ABC algorithm has variations depending on the probability model
+being simulated, so I'll create a visualization considering a case
+with discrete data, and another with continuos data.
+In the conclusion, the some parameters evaluating the performance of
+the algorithm will be shown.
+
+[aside]
+##### Analytical Distribution
+![quill](static/images/distributions.png)
+[/aside]
+Below there is an example of visualization I'm planning on doing.
+
+[var name:"myVar" value:0 /]
+
+[button onClick:`myVar += 1`]Click Me![/button]
+
+Variable value: [Display value:myVar /]
+
+[var name:"showChart" value:false /]
+
+[Button onClick:`showChart = !showChart`]
+  [Display value:`showChart ? 'Hide Chart' : 'Show Chart' ` /]
+[/Button]
+
+
+[var name:"numberBins" value:20 /]
+[var name:"color" value:"green" /]
+
+// [Conditional if:`showChart`]
+// [Loop value:`[10,20,100]`]
+//   [var name:"numberBins" value:"_iterator" /]
+// [/Loop]
+// [/Conditional]
+
+[data name:"abcBeta" source:"ABC_Beta.csv" /]
+[var name:"state" value:0 /]
+[IdyllVegaLite data:abcBeta spec:`{
+"hconcat" : [
+  {
+    "view":{"stroke" : null},
+    "layer": [{
+
+
+    "selection": {
+      "brush": {"type": "interval","encodings": ["x"],"init":{"x": [3.6, 4.4]}}
+    },
+    "view":{"stroke" : null},
+    "width": 250,
+    "height": 200,
+    "mark": "circle",
+    "encoding": {
+        "x": {"field": "x1", "type": "quantitative","axis": {"grid":false, "title":"X"}},
+        "y": {"field": "x2", "type": "quantitative", "axis": null},
+        "size":{"value":200},
+        "color": {
+              "condition": {"selection": "brush", "field": "x3", "type": "quantitative"},
+              "value": color
+            }
+        }
+}]},
+  {
+    "layer":[{
+    "transform": [
+      {"filter": {"selection": "brush"}}
+    ],
+    "width": 250,
+    "height": 200,
+    "mark": "bar",
+    "encoding": {
+    "x": {
+        "bin":{"maxbins":numberBins},
+        "field": "x3",
+        "type": "quantitative"
+    },
+    "y": {
+        "aggregate": "count",
+        "type": "quantitative"
+      }
+    }}
+    ]
+}]
+}` /]
+
+[action style:`{color:'red'}` onClick:`color='red'`]red[/action] [action style:`{color:'green'}` onClick:`color='green'`]green[/action] [action style:`{color:'#4682b4'}` onClick:`color='#4682b4'`]blue[/action]
+
+#### 1.3 Vision Inspirations
+Below there are two examples of "explorable explanations"
+that motivated me (both using idyll).
+
+* [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/)
+* [Multi-Armed Banding Problem](https://cse442-17f.github.io/LinUCB/)
+
+#### 1.4 Animation
+
+## Components
+
+Components can be embedded using a bracket syntax:
+
+```
+[Range /]
+```
+
+and can contain nested content:
+
+```
+[Equation]e = mc^{2}[/Equation]
+```
+
+Components accept properties:
+
+```
+[Range value:x min:0 max:1 /]
+```
+
+that can be bound to variables to achieve interactivity (more in next section).
+
+
+A variety of components are included by default. See [all the available components](https://idyll-lang.org/docs/components/). You can also use any html tag, for example: `[div] A div! [/div]`.
+
+To create your own, add it to the `components/` folder. There are examples of how to use Idyll with React and D3 based components already included.
+
+
+
+## Interactivity
+
+Here is how you can instantiate a variable and bind it to a component:
+
+[var name:"exampleVar" value:5 /]
+
+[Range min:0 max:10 value:exampleVar /]
+[Display value:exampleVar /]
+
+```
+[var name:"exampleVar" value:5 /]
+
+[Range min:0 max:10 value:exampleVar /]
+[Display value:exampleVar /]
+```
+
+## Learn More
+
+To learn more see the documentation at https://idyll-lang.org/docs/,
+join our [chatroom](https://gitter.im/idyll-lang/Lobby), or see the project on [GitHub](https://github.com/idyll-lang/idyll).
+
+[hr /]
+
+# Technical Details
+
+## Installation
+
+- Make sure you have `idyll` installed (`npm i -g idyll`).
+- Clone this repo and run `npm install`.
+
+## Developing a post locally
+
+Run `idyll`.
+
+## Building a post for production
+
+Run `idyll build`. The output will appear in the top-level `build` folder. To change the output location, change the `output` option in `package.json`.
+
+## Deploying
+
+Make sure your post has been built, then deploy the docs folder via any static hosting service.
+
+## Dependencies
+
+You can install custom dependencies by running `npm install <package-name> --save`. Note that any collaborators will also need download the package locally by running `npm install` after pulling the changes.
+
+The first strategy is to rely on [CSS to handle the animations](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations).
+This is often a good approach because it allows the animation and re-rendering logic to be pushed down
+into the browser where hardware acceleration can often be applied to acheive great performance.
+Let's see how this would work with the simple colored square example.
+
+[var name:"animatedDivBackground" value:`[0, 0, 0]` /]
+[var name:"animationDuration" value:250 /]
+
+[div style:`{ background: "rgb(" + animatedDivBackground.join(',') + ")",
+width: 50, height: 50, margin: '0 auto', transition: 'background ' + animationDuration + 'ms' }` /]
+
+[Button onClick:`animatedDivBackground = [255 * Math.random(), 255 * Math.random(), 255 * Math.random()]` ]
+  Randomize color
+[/Button]
+
+An Idyll variable can even be used to control the duration of the animation. Drag the slider below, and see how
+this affects changing the color of the square.
+
+[div style:`{textAlign: 'center'}`]
+  Animation Duration (ms): [Display value:animationDuration format:"d" /][br/]
+  [Range value:animationDuration min:0 max:5000 /]
+[/div]

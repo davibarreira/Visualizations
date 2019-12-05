@@ -52,74 +52,61 @@ the algorithm will be shown.
 [/aside]
 Below there is an example of visualization I'm planning on doing.
 
+[var name:"numberBins" value:20 /]
+[var name:"color" value:"gray" /]
+
 [data name:"abcBeta" source:"ABC_Beta.csv" /]
 [var name:"state" value:0 /]
 [IdyllVegaLite data:abcBeta spec:`{
-"hconcat" : [
-  {
-    "view":{"stroke" : null},
-    "layer": [{
+  "hconcat" : [
+    {
+
+      "view":{"stroke" : null},
+      "layer": [{
 
 
-    "selection": {
-      "brush": {"type": "interval","encodings": ["x"],"init":{"x": [3.6, 4.4]}}
-    },
-    "view":{"stroke" : null},
-    "width": 250,
-    "height": 200,
-    "mark": "circle",
-    "encoding": {
-        "x": {"field": "x1", "type": "quantitative","axis": {"grid":false, "title":"X"}},
-        "y": {"field": "x2", "type": "quantitative", "axis": null},
-        "size":{"value":200},
-        "color": {
-              "condition": {"selection": "brush", "field": "x3", "type": "quantitative"},
-              "value": "grey"
-            }
+      "selection": {
+        "brush": {"type": "interval","encodings": ["x"],"init":{"x": [5.6, 6.4]}}
+      },
+      "view":{"stroke" : null},
+      "width": 500,
+      "height": 300,
+      "mark": {"type": "bar","stroke": "black",
+      "strokeWidth": 0.2},
+      "encoding": {
+          "x": {"field": "x1", "type": "quantitative","axis": {"grid":false, "title":"K"},"scale":{"domain":[-0.1,8.1]}},
+          "y": {"aggregate": "count","type": "quantitative", "axis": {"grid":false, "title":"Count Samples"}},
+          "size":{"value":15},
+          "color": {
+                "condition": {"selection": "brush", "field": "x3", "type": "quantitative","title":"Coin Bias",
+                "legend": {"orient": "top", "title": "Coin Bias"}
+                              },
+                "value": "grey"
+              }
+          }
+  }]},
+    {
+      "layer":[{
+      "transform": [
+        {"filter": {"selection": "brush"}}
+      ],
+      "width": 500,
+      "height": 300,
+      "mark": "bar",
+      "encoding": {
+      "x": {
+          "bin":{"maxbins":20},
+          "field": "x3",
+          "type": "quantitative"
+      },
+      "y": {
+          "aggregate": "count",
+          "type": "quantitative",
+          "title": "Count Samples"
         }
-}]},
-  {
-    "layer":[{
-    "transform": [
-      {"filter": {"selection": "brush"}}
-    ],
-    "width": 250,
-    "height": 200,
-    "mark": "bar",
-    "encoding": {
-    "x": {
-        "bin":{"maxbins":15},
-        "field": "x3",
-        "type": "quantitative"
-    },
-    "y": {
-        "aggregate": "count",
-        "type": "quantitative"
-      }
-    }}
-    ]
-}]
+      }}
+      ]
+  }]
 }` /]
 
-#### 1.3 Vision Inspirations
-Below there are two examples of "explorable explanations"
-that motivated me (both using idyll).
-
-* [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/)
-* [Multi-Armed Banding Problem](https://cse442-17f.github.io/LinUCB/)
-
-#### 1.4 Animation
-[var name:"cx" value:400 /]
-[var name:"cy" value:200 /]
-[var name:"r" value:10 /]
-
-[svg fullWidth:true width:800 height:400 style:`{width: '100%', background: '#222'}` ]
-  [circle  r:r cx:cx cy:cy fill:"#fff" /]
-[/svg]
-[Button onClick:`animate('cx', Math.random() * 800, 250); animate('cy', Math.random() * 400, 250)` ]
-  Move circle
-[/Button]
-
-[Button onClick:`animate('r', 3 + Math.random() * 20)` ]
-  Resize circle
-[/Button]
+[action style:`{color:'red'}` onClick:`color='red'`]red[/action] [action style:`{color:'gray'}` onClick:`color='gray'`]green[/action] [action style:`{color:'#4682b4'}` onClick:`color='#4682b4'`]blue[/action]
