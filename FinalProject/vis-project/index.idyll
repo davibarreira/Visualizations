@@ -97,80 +97,94 @@ Sample new coin
 
 [IdyllVegaLite data:abcBeta spec:`{
   "hconcat" : [
-    {
-      "layer":[{
-      "width": 500,
-      "height": 300,
-      "mark":{"type":"area","line":true},
-      "encoding": {
-      "x": {
-          "field": "x3",
-          "type": "quantitative",
-          "axis":{"grid":false,"title":"Coin Bias"}
-      },
-      "y": {
-          "field": "x5",
-          "type": "quantitative",
-          "axis":{"grid":false},
-          "scale":{"domain":[0,1.2]}
-        }
-      }},{
-      "width": 500,
-      "height": 300,
-      "transform": [
-        {"filter": {"field": "x4", "equal":idSampler}}
-      ],
-      "mark": {"type":"bar", "color":"orange"},
-      "encoding": {
-      "x": {
-          "field": "x3",
-          "type": "quantitative",
-          "scale":{"domain":[0,1]},
-              "axis":{"grid":false}
-      },
-      "y": {
-          "field": "x5",
-          "type": "quantitative",
-          "title": "Prior Probability",
-          "scale":{"domain":[0,1.2]}
-        },
-      "color":{"field":"x4","type":"nominal",
-                "legend": {"orient": "top", "title": "Sampled Coin"},
-                "scale": {
-                "range": ["orange"]
-                }}
-              }
-      }
-      ]
-  },
   {
-      "width": 500,
-      "height": 300,
-      "transform": [
-        {
-          "filter":{"and":[{"field": "x1", "equal":6},
-              {"field": "x4", "lte":idSampler}]
-          }
-      }],
-      "mark": "bar",
-      "encoding": {
-      "x": {
-          "scale":{"domain":[0,1]},
-          "bin": {
-              "binned": false,
-              "step": 0.05},
-          "field": "x3",
-          "type": "quantitative",
-          "axis":{"grid":false,"title":"Coin Bias"}
+    "layer":[{
+    "width": 500,
+    "height": 300,
+    "mark":{"type":"area","line":true},
+    "encoding": {
+    "x": {
+        "field": "x3",
+        "type": "quantitative",
+        "axis":{"grid":false,"title":"Coin Bias"}
+    },
+    "y": {
+        "field": "x5",
+        "type": "quantitative",
+        "axis":{"grid":false},
+        "scale":{"domain":[0,1.2]}
+      }
+    }},{
+    "width": 500,
+    "height": 300,
+    "transform": [
+      {"filter": {"field": "x4", "equal":idSampler}}
+    ],
+    "mark": {"type":"bar", "color":"orange"},
+    "encoding": {
+    "x": {
+        "field": "x3",
+        "type": "quantitative",
+        "scale":{"domain":[0,1]},
+            "axis":{"grid":false}
+    },
+    "y": {
+        "field": "x5",
+        "type": "quantitative",
+        "title": "Prior Probability",
+        "scale":{"domain":[0,1.2]}
       },
-      "y": {
-          "aggregate": "count",
-          "type": "quantitative",
-          "title": "Count Samples Posterior",
-          "axis":{"grid":false},
-          "scale":{"domain":[0,22]}
+    "color":{"field":"x4","type":"nominal",
+              "legend": {"orient": "top", "title": "Sampled Coin"},
+              "scale": {
+              "range": ["orange"]
+              }}
+            }
+    }
+    ]
+},
+{
+    "layer":[{
+    "width": 500,
+    "height": 300,
+    "transform": [
+      {
+        "filter":{"and":[{"field": "x1", "equal":6},
+            {"field": "x4", "lte":idSampler}]
         }
-      }}
+    }],
+    "mark": "bar",
+    "encoding": {
+    "x": {
+        "scale":{"domain":[0,1]},
+        "bin": {
+            "binned": false,
+            "step": 0.1},
+        "field": "x3",
+        "type": "quantitative",
+        "axis":{"grid":false,"title":"Coin Bias"}
+    },
+    "y": {
+        "aggregate": "count",
+        "type": "quantitative",
+        "axis":{"grid":false, "title":"Count Samples Posterior", "titleColor":"steelblue"},
+        "scale":{"domain":[0,30]}
+      }
+    }},
+    {
+    "width": 500,
+    "height": 300,
+          "mark": {"type": "line", "color": "green"},
+          "encoding": {
+            "x": {"type": "quantitative", "field": "x6"},
+            "y": {
+              "type": "quantitative",
+              "field": "x7", "axis": {"title":"Real posterior distribution", "titleColor":"green"}
+            },"size":{"value":3}
+          }
+        }
+    ],"resolve": {"scale": {"y": "independent", "x": "shared"}}
+}
   ]
 }` /]
 
@@ -236,7 +250,7 @@ ABC sampler for different he observed number of heads.
       "mark": "bar",
       "encoding": {
       "x": {
-          "bin":{"maxbins":20},
+          "bin":{"maxbins":15},
           "field": "x3",
           "type": "quantitative", "axis":{"title":"Coin Bias"}
       },
