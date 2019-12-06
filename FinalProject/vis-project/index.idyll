@@ -395,3 +395,8 @@ move the range slider to change the starting value of the **threshold** [dynamic
       "resolve": {"scale": {"y": "independent", "x": "shared"}}
 }]
 }` /]
+
+### 1.3 ABC Post-Processing
+Local linear regression was proposed by Beaumont et al. (2002) as a way
+improve the result of simulations without the need to use restrictively low
+threshold values.
