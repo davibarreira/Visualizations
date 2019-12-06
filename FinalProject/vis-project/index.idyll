@@ -1,4 +1,5 @@
-[meta title:"Mathematical Visualizations" description:"Short description of your project" /]
+[meta title:"Mathematical Visualizations" description:"Explorable Explanatio
+of Approximate Bayesian Calculation algorithm" /]
 
 [Header
   fullWidth:true
@@ -201,7 +202,7 @@ of the bias (θ) of this coins by filtering by the number of heads obtained.
 This graph is interactive, hence, you can alter the gray region which filters
 the coin by number of successes. Changing the position of the filter,
 one can observe the different posterior distribution estimates given by the
-ABC sampler for different he observed number of heads.
+ABC sampler for different observed number of heads.
 
 
 [var name:"numberBins" value:15 /]
@@ -458,7 +459,7 @@ double click to deselect all points.
     "mark": {"type": "circle"},
     "encoding": {
         "x": {"field": "Error", "type": "quantitative","axis": {"grid":false, "title":"Error"}},
-        "y": {"field": "Theta", "type":"quantitative","axis": {"grid":false, "title":"Theta"}},
+        "y": {"field": "Theta", "type":"quantitative","axis": {"grid":false, "title":"θ"}},
         "size":{"condition":{"selection":"pts", "value":30},
                 "value":5},
         "color": {
@@ -511,7 +512,8 @@ double click to deselect all points.
         "x": {
             "bin":{"maxbins":20},
             "field": "adjusted",
-            "type": "quantitative","title":"θ"
+            "type": "quantitative","title":"θ",
+            "scale":{"domain":[-3,7]}
         },
         "y": {
           "type": "quantitative",
@@ -557,3 +559,19 @@ can be found a presentation containing a more thorough review of the topic.
 This article was created using [Idyll](http://idyll-lang.org/),
 with visualizations powered by [Vega-Lite](https://vega.github.io/vega-lite/).
 The source code is available on [GitHub](https://github.com/davibarreira/Visualizations/tree/master/FinalProject).
+
+
+## References
+
+Beaumont, M., Zhang, W., and Balding, D. (2002). Approximate
+bayesian computation in population genetics. Genetics,
+162(4):2025–2035. ID number: ISI:000180502300043.
+
+Pritchard, J. K., Seielstad, M. T., Perez-Lezaun, A., and Feldman, M. W.
+(1999). Population growth of human Y chromosomes: a study of Y
+chromosome microsatellites. Molecular Biology and Evolution,
+16(12):1791–1798.
+
+Rubin, D. B. (1984). Bayesianly justifiable and relevant frequency
+calculations for the applied statistician. Ann. Statist.,
+12(4):1151–1172.
