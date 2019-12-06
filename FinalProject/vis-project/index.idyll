@@ -5,7 +5,7 @@
   title:"Approximate Bayesian Computation (ABC)"
   subtitle:"Mathematical Visualizations"
   author:"Davi Sales Barreira"
-  authorLink:"https://github.com/davibarreira/Visualizations"
+  authorLink:"https://github.com/davibarreira"
   date:`(new Date()).toDateString()`
   background:"#222222"
   color:"#ffffff"
@@ -24,6 +24,10 @@ The idea originated from a paper of Donald Rubin in the 1980's, which
 stated that a posterior can be obtained by choosing parameters from a prior,
 simulating the sampling process of the real observations and accepting
 the parameters only when the simulated sample matched the real one.
+This method is also called likelihood-free, since it allows one to
+obtain a posterior probability without the use of the likelihood function.
+Such feature is very important in problems where the likelihood function
+has an unknown closed form or is very expensive to calculate.
 
 ### 1.1 ABC Original Algorithm
 [aside]
@@ -99,7 +103,7 @@ Sample new coin
     "x": {
         "field": "x3",
         "type": "quantitative",
-        "axis":{"grid":false,"title":"Coin Bias"}
+        "axis":{"grid":false,"title":"Coin Bias (θ)"}
     },
     "y": {
         "field": "x5",
@@ -155,13 +159,13 @@ Sample new coin
             "step": 0.1},
         "field": "x3",
         "type": "quantitative",
-        "axis":{"grid":false,"title":"Coin Bias"}
+        "axis":{"grid":false,"title":"Coin Bias (θ)"}
     },
     "y": {
         "aggregate": "count",
         "type": "quantitative",
         "axis":{"grid":false, "title":"Count Samples Posterior", "titleColor":"steelblue"},
-        "scale":{"domain":[0,30]}
+        "scale":{"domain":[0,36]}
       }
     }},
     {
@@ -169,7 +173,7 @@ Sample new coin
     "height": 300,
           "mark": {"type": "line", "color": "black"},
           "encoding": {
-            "x": {"type": "quantitative", "field": "x6","title":"Theta"},
+            "x": {"type": "quantitative", "field": "x6"},
             "y": {
               "type": "quantitative",
               "field": "x7", "axis": {"title":"Real posterior distribution", "titleColor":"black"}
@@ -243,7 +247,7 @@ ABC sampler for different he observed number of heads.
       "mark": "bar",
       "encoding": {
       "x": {
-          "bin":{"maxbins":20},
+          "bin":{"maxbins":16},
           "field": "x3",
           "type": "quantitative", "axis":{"title":"Coin Bias"}
       },
@@ -307,7 +311,8 @@ is less or equal than ϵ, we accept the θ.
 
 [var name:"eABC" value:3 /]
 In the graph below we plot the synthetic average for each simulation.
-The gray area represents the acceptance region. You can vary
+The gray area represents the acceptance region and the
+green line is the observed average. You can vary
 ϵ and see how decreasing it leads to a better approximation of the posterior.
 You can
 move the range slider to change the starting value of the **threshold** [dynamic min:0.1 max:10 step:0.1 value:eABC /].
@@ -384,7 +389,7 @@ move the range slider to change the starting value of the **threshold** [dynamic
     "height": 300,
           "mark": {"type": "line", "color": "black"},
           "encoding": {
-            "x": {"type": "quantitative", "field": "Grid","title":"Theta"},
+            "x": {"type": "quantitative", "field": "Grid","title":"θ"},
             "y": {
               "type": "quantitative",
               "field": "Real", "axis": {"title":"Real posterior distribution", "titleColor":"black"}
@@ -397,6 +402,158 @@ move the range slider to change the starting value of the **threshold** [dynamic
 }` /]
 
 ### 1.3 ABC Post-Processing
-Local linear regression was proposed by Beaumont et al. (2002) as a way
-improve the result of simulations without the need to use restrictively low
+As models grow in complexity, the threshold (ϵ) starts to become a problem,
+since we need lower and lower values to get a better approximation, this
+increases the number of simulations that we need to performed. A solution to
+this problem using *linear regression* was proposed by Beaumont et al. (2002).
+The method is a way to improve the results of the simulations
+without the need to use restrictively low
 threshold values.
+
+[aside]
+[Equation]
+\text{Observed values} = \bm y \quad \quad
+\text{Simulated values from ABC} = \bm z
+[/Equation]
+[br /]
+[br /]
+[Equation]
+\text{Error} = (\eta(\bm y) - \eta(\bm z)), \quad \quad
+\text{Regression coefficients} = \hat\beta
+[/Equation]
+[br /]
+[br /]
+[Equation]
+\bm \theta^{Proj} = \bm \theta - (\eta(\bm y) - \eta(\bm z))^T\hat\beta
+[/Equation]
+[/aside]
+
+The idea is to "estimate" the value of θ by projecting the sampled values
+in the axis where the error (observed vs. simulated) is equal to zero. Thus,
+allowing us to use sampled value of θ even when the error is quite significant.
+The original model by Beaumont et al. (2002) uses a weighted regression and
+considers only the values up to an error where a linear regression seems
+appropriate. In our toy model, we actually use a non-weighted regression and
+all the simulated samples (which is ok since we are in a fairly simple model).
+
+In the graph below, the pink line is the linear regression and the
+green points are the projection of each blue point in the y-axis.
+The histogram in the right uses these projected points to construct
+the approximation of the posterior. You can pass your mouse over the
+scatter plot to see the corresponding projection of each point, and
+double click to deselect all points.
+
+[IdyllVegaLite data:abcNormal spec:`{
+    "hconcat" : [
+  {
+
+    "view":{"stroke" : null},
+    "layer": [{
+    "selection": {
+      "pts":{"type": "single", "nearest": true,"on":"mouseover"}
+    },
+    "view":{"stroke" : null},
+    "width": 500,
+    "height": 300,
+    "mark": {"type": "circle"},
+    "encoding": {
+        "x": {"field": "Error", "type": "quantitative","axis": {"grid":false, "title":"Error"}},
+        "y": {"field": "Theta", "type":"quantitative","axis": {"grid":false, "title":"Theta"}},
+        "size":{"condition":{"selection":"pts", "value":30},
+                "value":5},
+        "color": {
+              "condition": {"selection": "pts"},
+              "value": "lightGrey"
+            }
+        }
+},
+{
+    "view":{"stroke" : null},
+    "width": 500,
+    "height": 300,
+    "mark": {"type": "line"},
+    "encoding": {
+        "x": {"field": "Error", "type": "quantitative","axis": {"grid":false}},
+        "y": {"field": "Regression", "type":"quantitative"},
+        "size":{"value":3},
+        "color": {
+              "value": "salmon"
+            }
+        }
+},
+{
+    "transform": [
+      {"filter": {"selection": "pts"}}
+    ],
+    "view":{"stroke" : null},
+    "width": 500,
+    "height": 300,
+    "mark": {"type": "circle"},
+    "encoding": {
+        "x": {"field": "zeros", "type": "quantitative","axis": {"grid":false}},
+        "y": {"field": "adjusted", "type":"quantitative"},
+        "size":{"condition":{"selection":"pts", "value":30}
+                ,"value":5},
+        "color": {
+              "value":"green"
+            }
+        }
+
+}
+]},
+  {
+    "layer":[
+    {
+    "width": 500,
+    "height": 300,
+      "mark": {"type": "bar", "color": "green","opacity":1.0},
+      "encoding": {
+        "x": {
+            "bin":{"maxbins":20},
+            "field": "adjusted",
+            "type": "quantitative","title":"θ"
+        },
+        "y": {
+          "type": "quantitative",
+          "aggregate": "count",
+          "field": "Theta","axis":{"title":"# ABC Projection Samples","titleColor":"green"}
+        }
+      }
+        },
+        {
+    "width": 500,
+    "height": 300,
+          "mark": {"type": "line", "color": "black"},
+          "encoding": {
+            "x": {"type": "quantitative", "field": "Grid"},
+            "y": {
+              "type": "quantitative",
+              "field": "Real", "axis": {"title":"Real posterior distribution", "titleColor":"black"}
+            },"size":{"value":3}
+          }
+        }
+      ],
+      "resolve": {"scale": {"y": "independent", "x": "shared"}}
+}]
+}` /]
+
+## Conclusion
+The ABC algorithm is not only an insightful way of understanding how to
+generate posterior distributions, it is also a useful method when
+one does not want to compute the likelihood to obtain the posterior distribution.
+The algorithm worked very well for both of our examples,
+but as models get complex, obtaining good approximations starts to become a
+challange, specially due to the lack of low-dimensional
+sufficient statistics and the need
+to use decreasingly low thresholds. We presented one of the methods
+used to improve the results of the ABC algorithm, the local linear
+regression method. This method
+worked quite well to avoid the need of using a very low threshold to
+get a good approximation for the posterior.
+
+ABC methods are still in active research. [Here](https://github.com/davibarreira/Computational_Statistics/blob/master/PaperReplication_ABC/ABC_Presentation.pdf)
+can be found a presentation containing a more thorough review of the topic.
+
+This article was created using [Idyll](http://idyll-lang.org/),
+with visualizations powered by [Vega-Lite](https://vega.github.io/vega-lite/).
+The source code is available on [GitHub](https://github.com/davibarreira/Visualizations/tree/master/FinalProject).
