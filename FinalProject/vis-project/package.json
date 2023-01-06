@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "d3": "^4.0.0",
-    "idyll": "^4.0.0",
+    "idyll": "^6.0.0-alpha.6",
     "idyll-d3-component": "^2.0.0",
     "idyll-vega-lite": "^1.0.2",
     "vega": "^5.7.3",
